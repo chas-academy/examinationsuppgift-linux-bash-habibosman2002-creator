@@ -3,7 +3,8 @@ if [ "$EUID" -ne 0 ]; then
 echo "Scriptet måste köras som root!" 
 exit 1 
 fi
-for user in "$@"; do
+for user in "$@"
+do
 useradd -m "$user" 
 mkdir -p /home/$user/Documents
 mkdir -p /home/$user/Downloads 
