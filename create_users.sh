@@ -1,39 +1,40 @@
 #!/bin/bash
 
-# Kontrollera root
+# Kontrollera att scriptet körs som root
 if [ "$EUID" -ne 0 ]; then
     echo "Scriptet måste köras som root!"
     exit 1
 fi
 
-# Loop genom alla användare
+# Loop genom alla användare som skickas in som argument
 for user in "$@"
 do
-    # Skapa användare
-    useradd -m "$user"
+    # Skapa användare med hemkatalog
+    useradd -m "$user" 2>/dev/null
 
-    # Skapa grupp och lägg till användare
-    groupadd "$user"
-    usermod -aG "$user" "$user"
+    # Skapa mappar i hemkatalog
+    mkdir -p "/home/$user/Documents"
+    mkdir -p "/home/$user/Downloads"
+    mkdir -p "/home/$user/Work"
 
-    # Skapa mappar
-    mkdir -p /home/$user/Documents
-    mkdir -p /home/$user/Downloads
-    mkdir -p /home/$user/Work
+    # Sätt ägare
+    chown -R "$user:$user" "/home/$user"
 
-    # Sätt rättigheter
-    chown -R $user:$user /home/$user
-    chmod -R 700 /home/$user
+    # Sätt rättigheter (endast ägare)
+    chmod 700 "/home/$user"
+    chmod 700 "/home/$user/Documents"
+    chmod 700 "/home/$user/Downloads"
+    chmod 700 "/home/$user/Work"
 
-    # Skapa välkomstfil
-    echo "Välkommen $user" > /home/$user/welcome.txt
+    # Skapa welcome.txt med exakt format
+    echo "Välkommen $user" > "/home/$user/welcome.txt"
 
-    # Lista andra användare
-    for other in $(ls /home)
+    # Lägg till andra användare (från systemet)
+    cut -d: -f1 /etc/passwd | while read other
     do
         if [ "$other" != "$user" ]; then
-            echo "$other" >> /home/$user/welcome.txt
+            echo "$other" >> "/home/$user/welcome.txt"
         fi
-    done 
+    done
 
 done
