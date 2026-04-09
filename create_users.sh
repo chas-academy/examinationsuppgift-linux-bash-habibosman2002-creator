@@ -29,7 +29,7 @@ do
     echo "Välkommen $user" > /home/$user/welcome.txt
 
     # Lista andra användare
-    for other in $(ls /home)
+    for other in $(ls /home) 
     do
         if [ "$other" != "$user" ]; then
             echo "$other" >> /home/$user/welcome.txt
