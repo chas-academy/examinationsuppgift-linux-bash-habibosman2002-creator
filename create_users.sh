@@ -6,13 +6,13 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Loop genom alla användare som skickas in som argument
+# Loop genom användare
 for user in "$@"
 do
-    # Skapa användare med hemkatalog
+    # Skapa användare
     useradd -m "$user" 2>/dev/null
 
-    # Skapa mappar i hemkatalog
+    # Skapa mappar
     mkdir -p "/home/$user/Documents"
     mkdir -p "/home/$user/Downloads"
     mkdir -p "/home/$user/Work"
@@ -20,19 +20,22 @@ do
     # Sätt ägare
     chown -R "$user:$user" "/home/$user"
 
-    # Sätt rättigheter (endast ägare)
+    # Sätt rättigheter
     chmod 700 "/home/$user"
     chmod 700 "/home/$user/Documents"
     chmod 700 "/home/$user/Downloads"
     chmod 700 "/home/$user/Work"
 
-    # Skapa welcome.txt med exakt format som testet förväntar sig
+    # Skapa welcome.txt
     echo "Välkommen $user" > "/home/$user/welcome.txt"
-    
-    # Lägg till lista på ANDRA användare (exklusive den nya användaren)
-    while IFS= read -r other_user; do
-        if [ "$other_user" != "$user" ]; then
-            echo "$other_user" >> "/home/$user/welcome.txt"
+
+    # Lägg till andra användare (från /home)
+    for dir in /home/*
+    do
+        other=$(basename "$dir")
+        if [ "$other" != "$user" ]; then
+            echo "$other" >> "/home/$user/welcome.txt"
         fi
-    done < <(cut -d: -f1 /etc/passwd)
+    done
+
 done
