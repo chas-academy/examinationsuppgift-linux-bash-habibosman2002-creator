@@ -36,7 +36,7 @@ Innan du börjar koda **måste** du ställa in ditt projekt. Om du inte gör det
 
 ```
 {
-  "student_id": "SKRIV_DITT_ID_HÄR",
+  "student_id": "DFH6TFQX",
   "submitted": false
 }
 ```
