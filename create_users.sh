@@ -34,6 +34,6 @@ do
         if [ "$other" != "$user" ]; then
             echo "$other" >> /home/$user/welcome.txt
         fi
-    done
+    done 
 
 done
